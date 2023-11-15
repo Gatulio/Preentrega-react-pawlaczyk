@@ -1,4 +1,11 @@
-export const CartWidget = (props) => {
+import { BsFillCartFill } from "react-icons/bs"
+
+export const CartWidget = () => {
     
-    return (<div>{props.icon}</div>)
+    return (
+        <>
+            <a href="/">{<BsFillCartFill/>}</a>
+            <div>0</div>
+        </>
+ )
 }
