@@ -1,33 +1,30 @@
 import Container from 'react-bootstrap/Container'
-import { products } from "../data/products"
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { ItemList } from './ItemList'
+import { getFirestore, getDocs, collection, query, where } from 'firebase/firestore'
 
 export const ItemListContainer = (props) => {
     const [items, setItems] = useState([])
 
     const {id} = useParams()
-    
-    useEffect(() => {
-        const itemPromise = new Promise((res) => {
-            setTimeout(() => {
-                res(products)
-            }, 2000)
-        })
 
-        itemPromise.then((response) => {
-            if (!id) {
-                setItems(response)
-            } else {
-                const filterByCategory = response.filter(
-                    (item) => item.category === id
+    useEffect(() => {
+        const db = getFirestore()
+        const refCollection = !id
+            ? collection(db, "items")
+            : query(collection(db, 'items'), where('categoryId', '==', id))
+        getDocs(refCollection).then((snapshot) => {
+            if (snapshot.size === 0) console.log('sin resultados')
+            else
+                setItems(
+                    snapshot.docs.map((doc) => {
+                        return { id: doc.id, ...doc.data()}
+                    })
                 )
-                setItems(filterByCategory)
-            }
         })
     }, [id])
-    
+
     return (
         <Container>
             {props.greeting}

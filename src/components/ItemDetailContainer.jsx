@@ -1,7 +1,7 @@
 import Container from 'react-bootstrap/Container'
-import { products } from "../data/products"
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
+import { getFirestore, getDoc, doc} from 'firebase/firestore'
 import { ItemDetail } from './ItemDetail'
 
 export const ItemDetailContainer = () => {
@@ -10,16 +10,11 @@ export const ItemDetailContainer = () => {
     const {id} = useParams()
     
     useEffect(() => {
-        const itemPromise = new Promise((res) => {
-            setTimeout(() => {
-                res(products)
-            }, 2000)
-        })
+        const db = getFirestore()
+        const refDoc = doc(db, "items", id)
 
-        itemPromise.then((response) => {
-            const filterById = response.find(
-                (item) => item.id === Number(id))
-            setItem(filterById)
+        getDoc(refDoc).then((snapshot) => {
+            setItem({ id: snapshot.id, ...snapshot.data() })
         })
     }, [id])
     
